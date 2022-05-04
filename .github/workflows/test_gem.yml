@@ -1,0 +1,42 @@
+name: Test Gem
+
+on:
+  workflow_dispatch:
+    inputs:
+      gems:
+        description: Gem(s) to test, as comma-separated string
+        required: true
+        type: string
+      rubies:
+        description: Ruby version to use, as comma-separated string
+        required: false
+        type: string
+        default: "3.1"
+  workflow_call:
+    inputs:
+      gems:
+        description: Gem(s) to test, as comma-separated string
+        required: true
+        type: string
+      rubies:
+        description: Ruby version to use, as comma-separated string
+        required: false
+        type: string
+        default: "3.1"
+
+jobs:
+  # This job takes the comma-separated list of gems + rubies and
+  # turns it into a json array that can be used to hydrate a dynamic
+  # GHA build matrix
+  build_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      gems: ${{ steps.build_matrix.outputs.gems }}
+      rubies: ${{ steps.build_matrix.outputs.rubies }}
+    steps:
+      - id: build_matrix
+        run: |
+          gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
+          rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
+        echo "::set-output name=gems::${gems}"
+        echo "::set-output name=rubies::${rubies}"
