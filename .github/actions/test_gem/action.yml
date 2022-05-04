@@ -50,13 +50,13 @@ runs:
         else
           bundle exec rake test
         fi
-    - name: Rubocop
-      shell: bash
-      run: |
-        dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-        cd "${dir}"
-
-        bundle exec rake rubocop
+    # - name: Rubocop
+    #   shell: bash
+    #   run: |
+    #     dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+    #     cd "${dir}"
+    #
+    #     bundle exec rake rubocop
     - name: YARD
       shell: bash
       run: |
