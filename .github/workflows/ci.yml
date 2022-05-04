@@ -19,189 +19,26 @@ jobs:
       - uses: actions/checkout@v2
       - id: find-gems
         run: |
-          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | jq -Rc '[inputs]')
+          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | tr '\n' ',')
           echo "::set-output name=gems::${gems}"
 
   test_fast:
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     needs: find_gems
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        ruby:
-          - "3.1"
-        gem: ${{ fromJSON(needs.find_gems.outputs.gems) }}
-        exclude:
-          - os: ubuntu-latest
-            ruby: jruby
-            gem: opentelemetry-exporter-otlp
-    name: ${{ matrix.gem }} / ${{ matrix.ruby }} / ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    env:
-      JRUBY_OPTS: --debug
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        ports:
-          - 2181:2181
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:latest
-        ports:
-          - 9092:9092
-          - 29092:29092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      memcached:
-        image: memcached:alpine
-        ports:
-          - 11211:11211
-      mongodb:
-        image: mongo:4.4
-        ports:
-          - 27017:27017
-      redis:
-        image: bitnami/redis:6.2
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          REDIS_PASSWORD: "passw0rd"
-      mysql:
-        image: mysql:5.6
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_PASSWORD: mysql
-          MYSQL_USER: mysql
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-      rabbitmq:
-        image: rabbitmq:3.8-alpine
-        ports:
-          - "5672:5672"
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
+    runs-on: ubuntu-latest
     steps:
-      - name: Install Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+      - uses: ./.github/workflows/test_gem.yml
         with:
-          ruby-version: "${{ matrix.ruby }}"
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Test Gem
-        uses: ./.github/actions/test_gem
-        with:
-          gem: ${{ matrix.gem }}
+          rubies: "3.1"
+          gems: ${{ needs.find_gems.outputs.gems }}
+
 
   test_slow:
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     needs: [find_gems, test_fast]
-    strategy:
-      fail-fast: false
-      matrix:
-        os:
-          - ubuntu-latest
-        ruby:
-          - "2.7"
-          - "3.0"
-          - "jruby"
-        gem: ${{ fromJSON(needs.find_gems.outputs.gems) }}
-        exclude:
-          - os: ubuntu-latest
-            ruby: jruby
-            gem: opentelemetry-exporter-otlp
-    name: ${{ matrix.gem }} / ${{ matrix.ruby }} / ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    env:
-      JRUBY_OPTS: --debug
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        ports:
-          - 2181:2181
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:latest
-        ports:
-          - 9092:9092
-          - 29092:29092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      memcached:
-        image: memcached:alpine
-        ports:
-          - 11211:11211
-      mongodb:
-        image: mongo:4.4
-        ports:
-          - 27017:27017
-      redis:
-        image: bitnami/redis:6.2
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          REDIS_PASSWORD: "passw0rd"
-      mysql:
-        image: mysql:5.6
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_PASSWORD: mysql
-          MYSQL_USER: mysql
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-      rabbitmq:
-        image: rabbitmq:3.8-alpine
-        ports:
-          - "5672:5672"
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
+    runs-on: ubuntu-latest
     steps:
-      - name: Install Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
+      - uses: ./.github/workflows/test_gem.yml
         with:
-          ruby-version: "${{ matrix.ruby }}"
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Test Gem
-        uses: ./.github/actions/test_gem
-        with:
-          gem: ${{ matrix.gem }}
+          rubies: "2.7,3.0,jruby"
+          gems: ${{ needs.find_gems.outputs.gems }}
