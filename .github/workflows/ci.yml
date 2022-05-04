@@ -4,13 +4,14 @@ on:
   push:
     branches:
       - main
+      - ahayworth/move-builds-around-idk
   pull_request:
     branches:
       - main
 
 jobs:
   test:
-    if: ${{ github.repository == 'open-telemetry/opentelemetry-ruby' }}
+    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       matrix:
         include:
