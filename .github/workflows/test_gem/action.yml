@@ -31,10 +31,10 @@ jobs:
   build_matrix:
     runs-on: ubuntu-latest
     outputs:
-      gems: ${{ steps.build_matrix.outputs.gems }}
-      rubies: ${{ steps.build_matrix.outputs.rubies }}
+      gems: ${{ steps.build-matrix.outputs.gems }}
+      rubies: ${{ steps.build-matrix.outputs.rubies }}
     steps:
-      - id: build_matrix
+      - id: build-matrix
         run: |
           gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
           rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
