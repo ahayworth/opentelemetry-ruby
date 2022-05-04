@@ -109,7 +109,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Test Gem
-        uses: ./.github/actions/test_gem
+        uses: ./.github/actions/test_gem.yml
         with:
           gem: ${{ matrix.gem }}
 
@@ -202,6 +202,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Test Gem
-        uses: ./.github/actions/test_gem
+        uses: ./.github/actions/test_gem.yml
         with:
           gem: ${{ matrix.gem }}
