@@ -30,9 +30,9 @@ jobs:
   # GHA build matrix
   build_matrix:
     runs-on: ubuntu-latest
-    outputs:
-      gems: ${{ steps.build-matrix.outputs.gems }}
-      rubies: ${{ steps.build-matrix.outputs.rubies }}
+    # outputs:
+    #   gems: ${{ steps.build_matrix.outputs.gems }}
+    #   rubies: ${{ steps.build_matrix.outputs.rubies }}
     steps:
       - id: build-matrix
         run: |
