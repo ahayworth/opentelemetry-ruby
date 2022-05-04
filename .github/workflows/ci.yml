@@ -27,7 +27,7 @@ jobs:
     needs: find_gems
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/test_gem.yml
+      - uses: ./.github/workflows/test_gem
         with:
           rubies: "3.1"
           gems: ${{ needs.find_gems.outputs.gems }}
@@ -38,7 +38,7 @@ jobs:
     needs: [find_gems, test_fast]
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/test_gem.yml
+      - uses: ./.github/workflows/test_gem
         with:
           rubies: "2.7,3.0,jruby"
           gems: ${{ needs.find_gems.outputs.gems }}
