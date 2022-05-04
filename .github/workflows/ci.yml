@@ -27,6 +27,7 @@ jobs:
     needs: find_gems
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/workflows/test_gem
         with:
           rubies: "3.1"
@@ -38,6 +39,7 @@ jobs:
     needs: [find_gems, test_fast]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: ./.github/workflows/test_gem
         with:
           rubies: "2.7,3.0,jruby"
