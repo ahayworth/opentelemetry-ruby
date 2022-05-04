@@ -38,8 +38,8 @@ jobs:
         run: |
           gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
           rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
-        echo "::set-output name=gems::${gems}"
-        echo "::set-output name=rubies::${rubies}"
+          echo "::set-output name=gems::${gems}"
+          echo "::set-output name=rubies::${rubies}"
 
   test_gems:
     needs: build_matrix
