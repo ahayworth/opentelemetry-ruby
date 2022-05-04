@@ -10,38 +10,37 @@ on:
       - main
 
 jobs:
+  find_gems:
+    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    runs-on: ubuntu-latest
+    outputs:
+      gems: ${{ steps.find-gems.outputs.gems }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: find-gems
+        run: |
+          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | jq -Rc '[inputs]')
+          echo "::set-output name=gems::${gems}"
+
   test:
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    needs: find_gems
     strategy:
-      matrix:
-        include:
-          - name: Test Linux / Ruby 2.5
-            os: ubuntu-latest
-            ruby: "2.5"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 2.6
-            os: ubuntu-latest
-            ruby: "2.6"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 2.7
-            os: ubuntu-latest
-            ruby: "2.7"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 3.0
-            os: ubuntu-latest
-            ruby: "3.0"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 3.1
-            os: ubuntu-latest
-            ruby: "3.1"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / JRuby
-            os: ubuntu-latest
-            ruby: jruby
-            # otlp omitted because it depends on protobuf which does not work on JRuby
-            flags: --include-simple --exclude opentelemetry-exporter-otlp
       fail-fast: false
-    name: ${{ matrix.name }}
+      matrix:
+        os:
+          - ubuntu-latest
+        ruby:
+          - "2.7"
+          - "3.0"
+          - "3.1"
+          - "jruby"
+        gem: ${{ fromJSON(needs.find_gems.outputs.gems) }}
+        exclude:
+          - os: ubuntu-latest
+            ruby: jruby
+            gem: opentelemetry-exporter-otlp
+    name: ${{ matrix.gem }} / ${{ matrix.ruby }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     env:
       JRUBY_OPTS: --debug
@@ -112,8 +111,16 @@ jobs:
           ruby-version: "${{ matrix.ruby }}"
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install tools
-        run: gem install --no-document bundler:2.1.4 toys:0.11.5
+      - name: Install gem
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          bundle install --jobs=3 --retry=3
+
+          if [[ -f Appraisals ]]; then
+            bundle exec appraisal install
+          fi
       - name: Run tests
         env:
           TEST_KAFKA_HOST: "127.0.0.1"
@@ -136,4 +143,30 @@ jobs:
           TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
           TEST_REDIS_HOST: localhost
           TEST_REDIS_PORT: 6379
-        run: toys ci ${{ matrix.flags }}
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          if [[ -f Appraisals ]]; then
+            bundle exec appraisal rake test
+          else
+            bundle exec rake test
+          fi
+      - name: Rubocop
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          bundle exec rake rubocop
+      - name: YARD
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          bundle exec rake yard
+      - name: Build Gem
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          gem build ${{ matrix.gem }}.gemspec
