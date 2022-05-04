@@ -8,6 +8,7 @@ runs:
   using: "composite"
   steps:
     - name: Install gem
+      shell: bash
       run: |
         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
         cd "${dir}"
@@ -39,6 +40,7 @@ runs:
         TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
         TEST_REDIS_HOST: localhost
         TEST_REDIS_PORT: 6379
+      shell: bash
       run: |
         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
         cd "${dir}"
@@ -49,18 +51,21 @@ runs:
           bundle exec rake test
         fi
     - name: Rubocop
+      shell: bash
       run: |
         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
         cd "${dir}"
 
         bundle exec rake rubocop
     - name: YARD
+      shell: bash
       run: |
         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
         cd "${dir}"
 
         bundle exec rake yard
     - name: Build Gem
+      shell: bash
       run: |
         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
         cd "${dir}"
