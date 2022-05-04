@@ -29,7 +29,6 @@ jobs:
   # turns it into a json array that can be used to hydrate a dynamic
   # GHA build matrix
   build_matrix:
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     runs-on: ubuntu-latest
     outputs:
       gems: ${{ steps.build_matrix.outputs.gems }}
@@ -43,7 +42,6 @@ jobs:
         echo "::set-output name=rubies::${rubies}"
 
   test_gems:
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     needs: build_matrix
     runs-on: ubuntu-latest
     strategy:
