@@ -31,6 +31,7 @@ jobs:
               end
             end.to_json
           ")
+          echo "DEBUG: ${matrix}"
           echo "::set-output name=matrix::${matrix}"
 
   test_gems:
