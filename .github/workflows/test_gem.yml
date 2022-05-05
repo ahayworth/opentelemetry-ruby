@@ -30,155 +30,154 @@ jobs:
   # GHA build matrix
   build_matrix:
     runs-on: ubuntu-latest
-    # outputs:
-    #   gems: ${{ steps.build_matrix.outputs.gems }}
-    #   rubies: ${{ steps.build_matrix.outputs.rubies }}
+    outputs:
+      gems: ${{ steps.build_matrix.outputs.gems }}
+      rubies: ${{ steps.build_matrix.outputs.rubies }}
     steps:
       - id: build-matrix
         run: |
-          echo "please my god work"
-          # gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
-          # rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
-          # echo "::set-output name=gems::${gems}"
-          # echo "::set-output name=rubies::${rubies}"
+          gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
+          rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
+          echo "::set-output name=gems::${gems}"
+          echo "::set-output name=rubies::${rubies}"
 
-  # test_gems:
-  #   needs: build_matrix
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix:
-  #       ruby: ${{ fromJSON(needs.build_matrix.outputs.rubies) }}
-  #       gem: ${{ fromJSON(needs.build_matrix.outputs.gems) }}
-  #     exclude:
-  #       # depends on protobuf, which does not work on JRuby
-  #       - ruby: jruby
-  #         gem: opentelemetry-exporter-otlp
-  #     name: ${{ matrix.gem }}@${{ matrix.ruby }}
-  #   services:
-  #     zookeeper:
-  #       image: confluentinc/cp-zookeeper:latest
-  #       ports:
-  #         - 2181:2181
-  #       env:
-  #         ZOOKEEPER_CLIENT_PORT: 2181
-  #         ZOOKEEPER_TICK_TIME: 2000
-  #     kafka:
-  #       image: confluentinc/cp-kafka:latest
-  #       ports:
-  #         - 9092:9092
-  #         - 29092:29092
-  #       env:
-  #         KAFKA_BROKER_ID: 1
-  #         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #         KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-  #         KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-  #         KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-  #         KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  #     memcached:
-  #       image: memcached:alpine
-  #       ports:
-  #         - 11211:11211
-  #     mongodb:
-  #       image: mongo:4.4
-  #       ports:
-  #         - 27017:27017
-  #     redis:
-  #       image: bitnami/redis:6.2
-  #       ports:
-  #         - 6379:6379
-  #       options: >-
-  #         --health-cmd "redis-cli ping"
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
-  #       env:
-  #         REDIS_PASSWORD: "passw0rd"
-  #     mysql:
-  #       image: mysql:5.6
-  #       env:
-  #         MYSQL_DATABASE: mysql
-  #         MYSQL_ROOT_PASSWORD: root
-  #         MYSQL_PASSWORD: mysql
-  #         MYSQL_USER: mysql
-  #       ports:
-  #         - 3306:3306
-  #       options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-  #     rabbitmq:
-  #       image: rabbitmq:3.8-alpine
-  #       ports:
-  #         - "5672:5672"
-  #     postgres:
-  #       image: postgres:13
-  #       env:
-  #         POSTGRES_PASSWORD: postgres
-  #       ports:
-  #         - 5432:5432
-  #       options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
-  #   steps:
-  #     - name: Install Ruby ${{ matrix.ruby }}
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: "${{ matrix.ruby }}"
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #     - name: Install gem
-  #       run: |
-  #         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-  #         cd "${dir}"
-  #
-  #         bundle install --jobs=3 --retry=3
-  #
-  #         if [[ -f Appraisals ]]; then
-  #           bundle exec appraisal install
-  #         fi
-  #     - name: Run tests
-  #       env:
-  #         JRUBY_OPTS: --debug
-  #         TEST_KAFKA_HOST: "127.0.0.1"
-  #         TEST_KAFKA_PORT: 29092
-  #         TEST_MYSQL_HOST: "127.0.0.1"
-  #         TEST_MYSQL_PORT: 3306
-  #         TEST_MYSQL_USER: mysql
-  #         TEST_MYSQL_PASSWORD: mysql
-  #         TEST_POSTGRES_PASSWORD: postgres
-  #         TEST_POSTGRES_USER: postgres
-  #         TEST_POSTGRES_HOST: localhost
-  #         TEST_POSTGRES_PORT: 5432
-  #         TEST_POSTGRES_DB: postgres
-  #         TEST_MEMCACHED_HOST: localhost
-  #         TEST_MEMCACHED_PORT: 11211
-  #         TEST_MONGODB_HOST: localhost
-  #         TEST_MONGODB_PORT: 27017
-  #         TEST_RABBITMQ_HOST: localhost
-  #         TEST_RABBITMQ_PORT: 5672
-  #         TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
-  #         TEST_REDIS_HOST: localhost
-  #         TEST_REDIS_PORT: 6379
-  #       run: |
-  #         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-  #         cd "${dir}"
-  #
-  #         if [[ -f Appraisals ]]; then
-  #           bundle exec appraisal rake test
-  #         else
-  #           bundle exec rake test
-  #         fi
-  #     # - name: Rubocop
-  #     #   run: |
-  #     #     dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-  #     #     cd "${dir}"
-  #     #
-  #     #     bundle exec rake rubocop
-  #     - name: YARD
-  #       run: |
-  #         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-  #         cd "${dir}"
-  #
-  #         bundle exec rake yard
-  #     - name: Build Gem
-  #       shell: bash
-  #       run: |
-  #         dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
-  #         cd "${dir}"
-  #
-  #         gem build ${{ matrix.gem }}.gemspec
+  test_gems:
+    needs: build_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ${{ fromJSON(needs.build_matrix.outputs.rubies) }}
+        gem: ${{ fromJSON(needs.build_matrix.outputs.gems) }}
+      exclude:
+        # depends on protobuf, which does not work on JRuby
+        - ruby: jruby
+          gem: opentelemetry-exporter-otlp
+      name: ${{ matrix.gem }}@${{ matrix.ruby }}
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:latest
+        ports:
+          - 2181:2181
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:latest
+        ports:
+          - 9092:9092
+          - 29092:29092
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      memcached:
+        image: memcached:alpine
+        ports:
+          - 11211:11211
+      mongodb:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
+      redis:
+        image: bitnami/redis:6.2
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          REDIS_PASSWORD: "passw0rd"
+      mysql:
+        image: mysql:5.6
+        env:
+          MYSQL_DATABASE: mysql
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_PASSWORD: mysql
+          MYSQL_USER: mysql
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+      rabbitmq:
+        image: rabbitmq:3.8-alpine
+        ports:
+          - "5672:5672"
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
+    steps:
+      - name: Install Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "${{ matrix.ruby }}"
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install gem
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          bundle install --jobs=3 --retry=3
+
+          if [[ -f Appraisals ]]; then
+            bundle exec appraisal install
+          fi
+      - name: Run tests
+        env:
+          JRUBY_OPTS: --debug
+          TEST_KAFKA_HOST: "127.0.0.1"
+          TEST_KAFKA_PORT: 29092
+          TEST_MYSQL_HOST: "127.0.0.1"
+          TEST_MYSQL_PORT: 3306
+          TEST_MYSQL_USER: mysql
+          TEST_MYSQL_PASSWORD: mysql
+          TEST_POSTGRES_PASSWORD: postgres
+          TEST_POSTGRES_USER: postgres
+          TEST_POSTGRES_HOST: localhost
+          TEST_POSTGRES_PORT: 5432
+          TEST_POSTGRES_DB: postgres
+          TEST_MEMCACHED_HOST: localhost
+          TEST_MEMCACHED_PORT: 11211
+          TEST_MONGODB_HOST: localhost
+          TEST_MONGODB_PORT: 27017
+          TEST_RABBITMQ_HOST: localhost
+          TEST_RABBITMQ_PORT: 5672
+          TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
+          TEST_REDIS_HOST: localhost
+          TEST_REDIS_PORT: 6379
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          if [[ -f Appraisals ]]; then
+            bundle exec appraisal rake test
+          else
+            bundle exec rake test
+          fi
+      # - name: Rubocop
+      #   run: |
+      #     dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+      #     cd "${dir}"
+      #
+      #     bundle exec rake rubocop
+      - name: YARD
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          bundle exec rake yard
+      - name: Build Gem
+        shell: bash
+        run: |
+          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          cd "${dir}"
+
+          gem build ${{ matrix.gem }}.gemspec
