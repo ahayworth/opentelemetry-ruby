@@ -19,7 +19,7 @@ jobs:
       - id: build_matrix
         run: |
           matrix=$(ruby -rjson -rpathname -e "
-            rubies = '${{ input.rubies }}'.split(',')
+            rubies = '${{ inputs.rubies }}'.split(',')
             all_gems = Pathname.glob('**/opentelemetry-*.gemspec')
             puts all_gems.each_with_object([]) do |path, a|
              rubies.each do |r|
