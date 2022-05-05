@@ -122,7 +122,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Install gem
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
           cd "${dir}"
 
           bundle install --jobs=3 --retry=3
@@ -154,7 +154,7 @@ jobs:
           TEST_REDIS_HOST: localhost
           TEST_REDIS_PORT: 6379
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
           cd "${dir}"
 
           if [[ -f Appraisals ]]; then
@@ -164,20 +164,20 @@ jobs:
           fi
       # - name: Rubocop
       #   run: |
-      #     dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+      #     dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
       #     cd "${dir}"
       #
       #     bundle exec rake rubocop
       - name: YARD
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
           cd "${dir}"
 
           bundle exec rake yard
       - name: Build Gem
         shell: bash
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}*.gemspec" -exec dirname {} \;)
+          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
           cd "${dir}"
 
           gem build ${{ matrix.gem }}.gemspec
