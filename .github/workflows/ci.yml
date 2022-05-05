@@ -32,7 +32,7 @@ jobs:
 
 
   test_slow:
-    needs: [find_gems, test_slow]
+    needs: [find_gems, test_fast]
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     uses: ./.github/workflows/test_gem.yml
     with:
