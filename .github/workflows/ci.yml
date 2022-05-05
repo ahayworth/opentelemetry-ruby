@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v2
       - id: find-gems
         run: |
-          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | tr '\n' ',')
+          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | paste -sd ',' -)
           echo "::set-output name=gems::${gems}"
 
   test_fast:
