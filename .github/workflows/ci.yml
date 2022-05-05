@@ -26,15 +26,15 @@ jobs:
     needs: find_gems
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     uses: ./.github/workflows/test_gem.yml
-      with:
-        rubies: "3.1"
-        gems: ${{ needs.find_gems.outputs.gems }}
+    with:
+      rubies: "3.1"
+      gems: ${{ needs.find_gems.outputs.gems }}
 
 
   test_slow:
     needs: [find_gems, test_slow]
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     uses: ./.github/workflows/test_gem.yml
-      with:
-        rubies: "2.7,3.0,jruby"
-        gems: ${{ needs.find_gems.outputs.gems }}
+    with:
+      rubies: "2.7,3.0,jruby"
+      gems: ${{ needs.find_gems.outputs.gems }}
