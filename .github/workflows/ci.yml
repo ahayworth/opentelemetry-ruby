@@ -10,31 +10,18 @@ on:
       - main
 
 jobs:
-  find_gems:
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-    runs-on: ubuntu-latest
-    outputs:
-      gems: ${{ steps.find-gems.outputs.gems }}
-    steps:
-      - uses: actions/checkout@v2
-      - id: find-gems
-        run: |
-          gems=$(find . -iname 'opentelemetry*.gemspec' -exec basename {} \; | sed -e 's/\.gemspec//g' | paste -sd ',' -)
-          echo "::set-output name=gems::${gems}"
-
   test_fast:
-    needs: find_gems
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    name: "Test ruby 3.1"
     uses: ./.github/workflows/test_gem.yml
     with:
       rubies: "3.1"
-      gems: ${{ needs.find_gems.outputs.gems }}
 
 
   test_slow:
-    needs: [find_gems, test_fast]
+    needs: test_fast
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    name: "Test other rubies"
     uses: ./.github/workflows/test_gem.yml
     with:
       rubies: "2.7,3.0,jruby"
-      gems: ${{ needs.find_gems.outputs.gems }}

@@ -1,23 +1,8 @@
 name: Test Gem
 
 on:
-  workflow_dispatch:
-    inputs:
-      gems:
-        description: Gem(s) to test, as comma-separated string
-        required: true
-        type: string
-      rubies:
-        description: Ruby version to use, as comma-separated string
-        required: false
-        type: string
-        default: "3.1"
   workflow_call:
     inputs:
-      gems:
-        description: Gem(s) to test, as comma-separated string
-        required: true
-        type: string
       rubies:
         description: Ruby version to use, as comma-separated string
         required: false
@@ -25,21 +10,28 @@ on:
         default: "3.1"
 
 jobs:
-  # This job takes the comma-separated list of gems + rubies and
-  # turns it into a json array that can be used to hydrate a dynamic
-  # GHA build matrix
   build_matrix:
+    name: Build testing matrix
     runs-on: ubuntu-latest
     outputs:
-      gems: ${{ steps.build_matrix.outputs.gems }}
-      rubies: ${{ steps.build_matrix.outputs.rubies }}
+      matrix: ${{ steps.build_matrix.outputs.matrix }}
     steps:
       - id: build_matrix
         run: |
-          gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rnc '[inputs]')
-          rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rnc '[inputs]')
-          echo "::set-output name=gems::${gems}"
-          echo "::set-output name=rubies::${rubies}"
+          matrix=$(ruby -rjson -rpathname -e "
+            rubies = '${{ input.rubies }}'.split(',')
+            all_gems = Pathname.glob('**/opentelemetry-*.gemspec')
+            puts all_gems.each_with_object([]) do |path, a|
+             rubies.each do |r|
+                a << {
+                  gem:  path.basename.sub('.gemspec', ''),
+                  path: path.dirname,
+                  ruby: r,
+                }
+              end
+            end.to_json
+          ")
+          echo "::set-output name=matrix::${matrix}"
 
   test_gems:
     needs: build_matrix
@@ -47,13 +39,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ${{ fromJSON(needs.build_matrix.outputs.rubies) }}
-        gem: ${{ fromJSON(needs.build_matrix.outputs.gems) }}
+        include: ${{ fromJSON(needs.build_matrix.outputs.matrix) }}
         exclude:
           # depends on protobuf, which does not work on JRuby
           - ruby: jruby
             gem: opentelemetry-exporter-otlp
     name: ${{ matrix.gem }}@${{ matrix.ruby }}
+
     services:
       zookeeper:
         image: confluentinc/cp-zookeeper:latest
@@ -114,24 +106,24 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Install Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "${{ matrix.ruby }}"
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install gem
+          bundler-cache: true
+          working-directory: "${{ matrix.path }}"
+          cache-version: 1
+      - name: Install Appraisals
+        working-directory: "${{ matrix.path }}"
+        if: hashFiles('Appraisals') != ''
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
-          cd "${dir}"
-
-          bundle install --jobs=3 --retry=3
-
-          if [[ -f Appraisals ]]; then
-            bundle exec appraisal install
-          fi
+          bundle exec appraisal install
       - name: Run tests
+        working-directory: "${{ matrix.path }}"
         env:
           JRUBY_OPTS: --debug
           TEST_KAFKA_HOST: "127.0.0.1"
@@ -155,30 +147,17 @@ jobs:
           TEST_REDIS_HOST: localhost
           TEST_REDIS_PORT: 6379
         run: |
-          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
-          cd "${dir}"
-
           if [[ -f Appraisals ]]; then
             bundle exec appraisal rake test
           else
             bundle exec rake test
           fi
       # - name: Rubocop
-      #   run: |
-      #     dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
-      #     cd "${dir}"
-      #
-      #     bundle exec rake rubocop
+      #   working-directory: "${{ matrix.path }}"
+      #   run: bundle exec rake rubocop
       - name: YARD
-        run: |
-          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
-          cd "${dir}"
-
-          bundle exec rake yard
-      - name: Build Gem
-        shell: bash
-        run: |
-          dir=$(find . -iname "${{ matrix.gem }}.gemspec" -exec dirname {} \;)
-          cd "${dir}"
-
-          gem build ${{ matrix.gem }}.gemspec
+        working-directory: "${{ matrix.path }}"
+        run: bundle exec rake yard
+      - name: Build gem
+        working-directory: "${{ matrix.path }}"
+        run: gem build ${{ matrix.gem }}.gemspec
