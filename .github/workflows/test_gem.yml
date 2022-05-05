@@ -36,8 +36,8 @@ jobs:
     steps:
       - id: build-matrix
         run: |
-          gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rc '[inputs]')
-          rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rc '[inputs]')
+          gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rnc '[inputs]')
+          rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rnc '[inputs]')
           echo "::set-output name=gems::${gems}"
           echo "::set-output name=rubies::${rubies}"
 
