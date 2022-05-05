@@ -34,7 +34,7 @@ jobs:
       gems: ${{ steps.build_matrix.outputs.gems }}
       rubies: ${{ steps.build_matrix.outputs.rubies }}
     steps:
-      - id: build-matrix
+      - id: build_matrix
         run: |
           gems=$(echo "${{ inputs.gems }}" | tr ',' '\n' | jq -Rnc '[inputs]')
           rubies=$(echo "${{ inputs.rubies }}" | tr ',' '\n' | jq -Rnc '[inputs]')
