@@ -45,6 +45,7 @@ jobs:
     needs: build_matrix
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         ruby: ${{ fromJSON(needs.build_matrix.outputs.rubies) }}
         gem: ${{ fromJSON(needs.build_matrix.outputs.gems) }}
