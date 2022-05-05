@@ -42,6 +42,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        ruby: []
+        gem: []
+        path: []
         include: ${{ fromJSON(needs.build_matrix.outputs.matrix) }}
         exclude:
           # depends on protobuf, which does not work on JRuby
