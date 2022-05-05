@@ -23,24 +23,18 @@ jobs:
           echo "::set-output name=gems::${gems}"
 
   test_fast:
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     needs: find_gems
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/test_gem.yml
-        with:
-          rubies: "3.1"
-          gems: ${{ needs.find_gems.outputs.gems }}
+    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    uses: ./.github/workflows/test_gem.yml
+      with:
+        rubies: "3.1"
+        gems: ${{ needs.find_gems.outputs.gems }}
 
 
   test_slow:
+    needs: [find_gems, test_slow]
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-    needs: [find_gems, test_fast]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/test_gem.yml
-        with:
-          rubies: "2.7,3.0,jruby"
-          gems: ${{ needs.find_gems.outputs.gems }}
+    uses: ./.github/workflows/test_gem.yml
+      with:
+        rubies: "2.7,3.0,jruby"
+        gems: ${{ needs.find_gems.outputs.gems }}
