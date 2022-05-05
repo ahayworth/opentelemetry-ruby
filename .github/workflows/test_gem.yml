@@ -48,10 +48,10 @@ jobs:
       matrix:
         ruby: ${{ fromJSON(needs.build_matrix.outputs.rubies) }}
         gem: ${{ fromJSON(needs.build_matrix.outputs.gems) }}
-      exclude:
-        # depends on protobuf, which does not work on JRuby
-        - ruby: jruby
-          gem: opentelemetry-exporter-otlp
+        exclude:
+          # depends on protobuf, which does not work on JRuby
+          - ruby: jruby
+            gem: opentelemetry-exporter-otlp
       name: ${{ matrix.gem }}@${{ matrix.ruby }}
     services:
       zookeeper:
