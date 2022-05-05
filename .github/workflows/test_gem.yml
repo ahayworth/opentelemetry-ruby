@@ -21,7 +21,8 @@ jobs:
           matrix=$(ruby -rjson -rpathname -e "
             rubies = '${{ inputs.rubies }}'.split(',')
             all_gems = Pathname.glob('**/opentelemetry-*.gemspec')
-            puts all_gems.each_with_object([]) do |path, a|
+            output = []
+            all_gems.each_with_object(output) do |path, a|
              rubies.each do |r|
                 a << {
                   gem:  path.basename.sub('.gemspec', ''),
@@ -29,7 +30,8 @@ jobs:
                   ruby: r,
                 }
               end
-            end.to_json
+            end
+            puts output.to_json
           ")
           echo "DEBUG: ${matrix}"
           echo "::set-output name=matrix::${matrix}"
