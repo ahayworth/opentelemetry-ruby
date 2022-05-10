@@ -174,36 +174,32 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+      - name: "JRuby Filter"
+        id: jruby_skip
+        run: |
+          echo "::set-output name=skip::false"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_pack"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_view"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_record"  ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_support" ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-mysql2"         ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-pg"             ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-que"            ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rack"           ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rails"          ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-redis"          ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
       - name: "Test JRuby"
+        if: "${{ steps.jruby_skip.outputs.skip == 'false' }}"
         uses: ./.github/actions/test_gem
         with:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
-        if: |
-          matrix.gem != "opentelemetry-instrumentation-action_pack"               &&
-          matrix.gem != "opentelemetry-instrumentation-action_view"               &&
-          matrix.gem != "opentelemetry-instrumentation-active_record"             &&
-          matrix.gem != "opentelemetry-instrumentation-active_support"            &&
-          matrix.gem != "opentelemetry-instrumentation-graphql"                   &&
-          matrix.gem != "opentelemetry-instrumentation-http_client"               &&
-          matrix.gem != "opentelemetry-instrumentation-lmdb"                      &&
-          matrix.gem != "opentelemetry-instrumentation-mysql2"                    &&
-          matrix.gem != "opentelemetry-instrumentation-pg"                        &&
-          matrix.gem != "opentelemetry-instrumentation-que"                       &&
-          matrix.gem != "opentelemetry-instrumentation-rack"                      &&
-          matrix.gem != "opentelemetry-instrumentation-rails"                     &&
-          matrix.gem != "opentelemetry-instrumentation-redis"                     &&
-          matrix.gem != "opentelemetry-instrumentation-resque"                    &&
-          matrix.gem != "opentelemetry-instrumentation-ruby_kafka"                &&
-          matrix.gem != "opentelemetry-instrumentation-trilogy"
-
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-sidekiq"                   &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-koala"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-delayed_job"               &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-bunny"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-http"                      &&
 
   instrumentation_with_services:
     # TODO: Fixme
@@ -242,28 +238,32 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+      - name: "JRuby Filter"
+        id: jruby_skip
+        run: |
+          echo "::set-output name=skip::false"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_pack"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_view"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_record"  ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_support" ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-mysql2"         ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-pg"             ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-que"            ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rack"           ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rails"          ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-redis"          ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
       - name: "Test JRuby"
+        if: "${{ steps.jruby_skip.outputs.skip == 'false' }}"
         uses: ./.github/actions/test_gem
         with:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
-        if: |
-          matrix.gem != "opentelemetry-instrumentation-action_pack"               &&
-          matrix.gem != "opentelemetry-instrumentation-action_view"               &&
-          matrix.gem != "opentelemetry-instrumentation-active_record"             &&
-          matrix.gem != "opentelemetry-instrumentation-active_support"            &&
-          matrix.gem != "opentelemetry-instrumentation-graphql"                   &&
-          matrix.gem != "opentelemetry-instrumentation-http_client"               &&
-          matrix.gem != "opentelemetry-instrumentation-lmdb"                      &&
-          matrix.gem != "opentelemetry-instrumentation-mysql2"                    &&
-          matrix.gem != "opentelemetry-instrumentation-pg"                        &&
-          matrix.gem != "opentelemetry-instrumentation-que"                       &&
-          matrix.gem != "opentelemetry-instrumentation-rack"                      &&
-          matrix.gem != "opentelemetry-instrumentation-rails"                     &&
-          matrix.gem != "opentelemetry-instrumentation-redis"                     &&
-          matrix.gem != "opentelemetry-instrumentation-resque"                    &&
-          matrix.gem != "opentelemetry-instrumentation-ruby_kafka"                &&
-          matrix.gem != "opentelemetry-instrumentation-trilogy"
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-sidekiq"                   &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
