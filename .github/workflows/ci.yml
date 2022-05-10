@@ -8,123 +8,236 @@ on:
     branches:
       - main
 
-jobs:
-  test:
-    if: ${{ github.repository == 'open-telemetry/opentelemetry-ruby' }}
-    strategy:
-      matrix:
-        include:
-          - name: Test Linux / Ruby 2.7
-            os: ubuntu-latest
-            ruby: "2.7"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 3.0
-            os: ubuntu-latest
-            ruby: "3.0"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / Ruby 3.1
-            os: ubuntu-latest
-            ruby: "3.1"
-            flags: --include-simple --include-appraisal
-          - name: Test Linux / JRuby
-            os: ubuntu-latest
-            ruby: jruby
-            # otlp omitted because it depends on protobuf which does not work on JRuby
-            flags: --include-simple --exclude opentelemetry-exporter-otlp
-      fail-fast: false
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.os }}
-    env:
-      JRUBY_OPTS: --debug
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        ports:
-          - 2181:2181
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:latest
-        ports:
-          - 9092:9092
-          - 29092:29092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      memcached:
-        image: memcached:alpine
-        ports:
-          - 11211:11211
-      mongodb:
-        image: mongo:4.4
-        ports:
-          - 27017:27017
-      redis:
-        image: bitnami/redis:6.2
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          REDIS_PASSWORD: "passw0rd"
-      mysql:
-        image: mysql:5.6
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_PASSWORD: mysql
-          MYSQL_USER: mysql
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-      rabbitmq:
-        image: rabbitmq:3.8-alpine
-        ports:
-          - "5672:5672"
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
-    steps:
-      - name: Install Ruby ${{ matrix.ruby }}
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: "${{ matrix.ruby }}"
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install tools
-        run: gem install --no-document bundler toys:0.11.5
-      - name: Run tests
-        env:
-          TEST_KAFKA_HOST: "127.0.0.1"
-          TEST_KAFKA_PORT: 29092
-          TEST_MYSQL_HOST: "127.0.0.1"
-          TEST_MYSQL_PORT: 3306
-          TEST_MYSQL_USER: mysql
-          TEST_MYSQL_PASSWORD: mysql
-          TEST_POSTGRES_PASSWORD: postgres
-          TEST_POSTGRES_USER: postgres
-          TEST_POSTGRES_HOST: localhost
-          TEST_POSTGRES_PORT: 5432
-          TEST_POSTGRES_DB: postgres
-          TEST_MEMCACHED_HOST: localhost
-          TEST_MEMCACHED_PORT: 11211
-          TEST_MONGODB_HOST: localhost
-          TEST_MONGODB_PORT: 27017
-          TEST_RABBITMQ_HOST: localhost
-          TEST_RABBITMQ_PORT: 5672
-          TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
-          TEST_REDIS_HOST: localhost
-          TEST_REDIS_PORT: 6379
-        run: toys ci ${{ matrix.flags }}
+  jobs:
+    base:
+      # TODO: Fixme
+      if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          gem:
+            - opentelemetry-metrics-api
+            - opentelemetry-common
+            - opentelemetry-sdk
+            - opentelemetry-registry
+            - opentelemetry-api
+            - opentelemetry-semantic_conventions
+            - opentelemetry-test-helpers
+            - opentelemetry-resource_detectors
+      name: ${{ matrix.gem }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: ./.github/workflows/test_gem.yml
+          with:
+            gem: ${{ matrix.gem }}
+
+    propagator:
+      # TODO: Fixme
+      if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          gem:
+            - opentelemetry-propagator-b3
+            - opentelemetry-propagator-jaeger
+            - opentelemetry-propagator-ottrace
+            - opentelemetry-propagator-xray
+      name: ${{ matrix.gem }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: ./.github/workflows/test_gem.yml
+          with:
+            gem: ${{ matrix.gem }}
+
+    exporter:
+      # TODO: Fixme
+      if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          gem:
+            - opentelemetry-exporter-jaeger
+            - opentelemetry-exporter-otlp
+            - opentelemetry-exporter-zipkin
+      name: ${{ matrix.gem }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: ./.github/workflows/test_gem.yml
+          with:
+            gem: ${{ matrix.gem }}
+
+    instrumentation:
+      # TODO: Fixme
+      if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+      strategy:
+        fail-fast: false
+        matrix:
+          gem:
+            - opentelemetry-instrumentation-que
+            - opentelemetry-instrumentation-http_client
+            - opentelemetry-instrumentation-mysql2
+            - opentelemetry-instrumentation-sinatra
+            - opentelemetry-instrumentation-sidekiq
+            - opentelemetry-instrumentation-dalli
+            - opentelemetry-instrumentation-redis
+            - opentelemetry-instrumentation-ruby_kafka
+            - opentelemetry-instrumentation-concurrent_ruby
+            - opentelemetry-instrumentation-active_model_serializers
+            - opentelemetry-instrumentation-action_view
+            - opentelemetry-instrumentation-bunny
+            - opentelemetry-instrumentation-all
+            - opentelemetry-instrumentation-aws_sdk
+            - opentelemetry-instrumentation-active_record
+            - opentelemetry-instrumentation-faraday
+            - opentelemetry-instrumentation-resque
+            - opentelemetry-instrumentation-rdkafka
+            - opentelemetry-instrumentation-pg
+            - opentelemetry-instrumentation-ethon
+            - opentelemetry-instrumentation-lmdb
+            - opentelemetry-instrumentation-active_support
+            - opentelemetry-instrumentation-http
+            - opentelemetry-instrumentation-graphql
+            - opentelemetry-instrumentation-trilogy
+            - opentelemetry-instrumentation-net_http
+            - opentelemetry-instrumentation-rack
+            - opentelemetry-instrumentation-action_pack
+            - opentelemetry-instrumentation-mongo
+            - opentelemetry-instrumentation-restclient
+            - opentelemetry-instrumentation-koala
+            - opentelemetry-instrumentation-active_job
+            - opentelemetry-instrumentation-excon
+            - opentelemetry-instrumentation-rspec
+            - opentelemetry-instrumentation-base
+            - opentelemetry-instrumentation-delayed_job
+            - opentelemetry-instrumentation-rails
+      name: ${{ matrix.gem }}
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+        - uses: ./.github/workflows/test_gem.yml
+          with:
+            gem: ${{ matrix.gem }}
+
+# jobs:
+#   test:
+#     if: ${{ github.repository == 'open-telemetry/opentelemetry-ruby' }}
+#     strategy:
+#       matrix:
+#         include:
+#           - name: Test Linux / Ruby 2.7
+#             os: ubuntu-latest
+#             ruby: "2.7"
+#             flags: --include-simple --include-appraisal
+#           - name: Test Linux / Ruby 3.0
+#             os: ubuntu-latest
+#             ruby: "3.0"
+#             flags: --include-simple --include-appraisal
+#           - name: Test Linux / Ruby 3.1
+#             os: ubuntu-latest
+#             ruby: "3.1"
+#             flags: --include-simple --include-appraisal
+#           - name: Test Linux / JRuby
+#             os: ubuntu-latest
+#             ruby: jruby
+#             # otlp omitted because it depends on protobuf which does not work on JRuby
+#             flags: --include-simple --exclude opentelemetry-exporter-otlp
+#       fail-fast: false
+#     name: ${{ matrix.name }}
+#     runs-on: ${{ matrix.os }}
+#     env:
+#       JRUBY_OPTS: --debug
+#     services:
+#       zookeeper:
+#         image: confluentinc/cp-zookeeper:latest
+#         ports:
+#           - 2181:2181
+#         env:
+#           ZOOKEEPER_CLIENT_PORT: 2181
+#           ZOOKEEPER_TICK_TIME: 2000
+#       kafka:
+#         image: confluentinc/cp-kafka:latest
+#         ports:
+#           - 9092:9092
+#           - 29092:29092
+#         env:
+#           KAFKA_BROKER_ID: 1
+#           KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#           KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
+#           KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+#           KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+#           KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+#       memcached:
+#         image: memcached:alpine
+#         ports:
+#           - 11211:11211
+#       mongodb:
+#         image: mongo:4.4
+#         ports:
+#           - 27017:27017
+#       redis:
+#         image: bitnami/redis:6.2
+#         ports:
+#           - 6379:6379
+#         options: >-
+#           --health-cmd "redis-cli ping"
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+#         env:
+#           REDIS_PASSWORD: "passw0rd"
+#       mysql:
+#         image: mysql:5.6
+#         env:
+#           MYSQL_DATABASE: mysql
+#           MYSQL_ROOT_PASSWORD: root
+#           MYSQL_PASSWORD: mysql
+#           MYSQL_USER: mysql
+#         ports:
+#           - 3306:3306
+#         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+#       rabbitmq:
+#         image: rabbitmq:3.8-alpine
+#         ports:
+#           - "5672:5672"
+#       postgres:
+#         image: postgres:13
+#         env:
+#           POSTGRES_PASSWORD: postgres
+#         ports:
+#           - 5432:5432
+#         options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
+#     steps:
+#       - name: Install Ruby ${{ matrix.ruby }}
+#         uses: ruby/setup-ruby@v1
+#         with:
+#           ruby-version: "${{ matrix.ruby }}"
+#       - name: Checkout
+#         uses: actions/checkout@v2
+#       - name: Install tools
+#         run: gem install --no-document bundler toys:0.11.5
+#       - name: Run tests
+#         env:
+#           TEST_KAFKA_HOST: "127.0.0.1"
+#           TEST_KAFKA_PORT: 29092
+#           TEST_MYSQL_HOST: "127.0.0.1"
+#           TEST_MYSQL_PORT: 3306
+#           TEST_MYSQL_USER: mysql
+#           TEST_MYSQL_PASSWORD: mysql
+#           TEST_POSTGRES_PASSWORD: postgres
+#           TEST_POSTGRES_USER: postgres
+#           TEST_POSTGRES_HOST: localhost
+#           TEST_POSTGRES_PORT: 5432
+#           TEST_POSTGRES_DB: postgres
+#           TEST_MEMCACHED_HOST: localhost
+#           TEST_MEMCACHED_PORT: 11211
+#           TEST_MONGODB_HOST: localhost
+#           TEST_MONGODB_PORT: 27017
+#           TEST_RABBITMQ_HOST: localhost
+#           TEST_RABBITMQ_PORT: 5672
+#           TEST_RABBITMQ_URL: amqp://guest:guest@localhost:5672
+#           TEST_REDIS_HOST: localhost
+#           TEST_REDIS_PORT: 6379
+#         run: toys ci ${{ matrix.flags }}
