@@ -26,25 +26,44 @@ runs:
         # of the benefits of bundler caching.
         rm -f "${dir}/Gemfile.lock"
 
+        echo "::set-output name=cache_key::linux"
         if [[ "${{ inputs.ruby }}" == "jruby" ]]; then
           echo "::set-output name=cache_key::jruby"
-        else
-          echo "::set-output name=cache_key::linux"
         fi
-    - name: "Install Ruby ${{ inputs.ruby }}"
+
+        echo "::set-output name=appraisals::false"
+        if [[ -f "${dir}/Appraisals" ]]; then
+          echo "::set-output name=appraisals::true"
+        fi
+
+    - name: "Install Ruby ${{ inputs.ruby }} with dependencies"
       uses: ruby/setup-ruby@v1
+      if: "${{ steps.setup.outputs.appraisals == 'false' }}"
       with:
         ruby-version: "${{ inputs.ruby }}"
         working-directory: "${{ steps.setup.outputs.dir }}"
         bundler-cache: true
         cache-version: "v1-${{ steps.setup.outputs.cache_key }}"
+
+    - name: "Install Ruby ${{ inputs.ruby }} without dependencies"
+      uses: ruby/setup-ruby@v1
+      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
+      with:
+        ruby-version: "${{ inputs.ruby }}"
+    - name: "Install dependencies and appraisals"
+      shell: bash
+      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
+      run: |
+        cd "${{ steps.setup.outputs.dir }}"
+        bundle install
+        bundle exec appraisal install
+
     - name: Test Gem
       shell: bash
       run: |
         cd "${{ steps.setup.outputs.dir }}"
 
         if [[ -f "Appraisals" ]]; then
-          bundle exec appraisal install
           bundle exec appraisal rake test
         else
           bundle exec rake test
