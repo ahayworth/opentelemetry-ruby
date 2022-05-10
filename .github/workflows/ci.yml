@@ -183,7 +183,9 @@ jobs:
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_support" ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-delayed_job"    ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http"           ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-koala"          ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rack"           ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rails"          ]] && echo "::set-output name=skip::true"
@@ -239,28 +241,24 @@ jobs:
         id: jruby_skip
         run: |
           echo "::set-output name=skip::false"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-bunny"          ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-mysql2"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-pg"             ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-que"            ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-redis"          ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-sidekiq"        ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
           # This is essentially a bash script getting evaluated, and we need to return true or the whole job fails.
           true
+
       - name: "Test JRuby"
         if: "${{ steps.jruby_skip.outputs.skip == 'false' }}"
         uses: ./.github/actions/test_gem
         with:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-sidekiq"                   &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-koala"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-delayed_job"               &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-bunny"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-http"                      &&
     services:
       zookeeper:
         image: confluentinc/cp-zookeeper:latest
