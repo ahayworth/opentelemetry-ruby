@@ -182,6 +182,7 @@ jobs:
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_view"    ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_record"  ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_support" ]] && echo "::set-output name=skip::true"
+          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-delayed_job"    ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
@@ -211,17 +212,17 @@ jobs:
       fail-fast: false
       matrix:
         gem:
-          - opentelemetry-instrumentation-rdkafka
+          - opentelemetry-instrumentation-bunny
+          - opentelemetry-instrumentation-dalli
           - opentelemetry-instrumentation-mongo
+          - opentelemetry-instrumentation-mysql2
+          - opentelemetry-instrumentation-pg
+          - opentelemetry-instrumentation-que
+          - opentelemetry-instrumentation-rdkafka
           - opentelemetry-instrumentation-redis
           - opentelemetry-instrumentation-resque
           - opentelemetry-instrumentation-ruby_kafka
-          - opentelemetry-instrumentation-mysql2
-          - opentelemetry-instrumentation-pg
           - opentelemetry-instrumentation-trilogy
-          - opentelemetry-instrumentation-bunny
-          - opentelemetry-instrumentation-que
-          - opentelemetry-instrumentation-dalli
     name: ${{ matrix.gem }}
     runs-on: ubuntu-latest
     steps:
@@ -245,18 +246,9 @@ jobs:
         id: jruby_skip
         run: |
           echo "::set-output name=skip::false"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_pack"    ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_view"    ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_record"  ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-active_support" ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-mysql2"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-pg"             ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-que"            ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rack"           ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rails"          ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-redis"          ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
