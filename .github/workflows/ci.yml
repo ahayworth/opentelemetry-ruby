@@ -198,6 +198,8 @@ jobs:
           - opentelemetry-instrumentation-bunny
           - opentelemetry-instrumentation-que
           - opentelemetry-instrumentation-dalli
+    name: ${{ matrix.gem }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: "Test Ruby 3.1"
