@@ -180,25 +180,26 @@ jobs:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
         if: |
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-action_pack"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-action_view"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-active_record"             &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-active_support"            &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-graphql"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-http_client"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-lmdb"                      &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-mysql2"                    &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-pg"                        &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-que"                       &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-rack"                      &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-rails"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-redis"                     &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-resque"                    &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-ruby_kafka"                &&
+          matrix.gem != "opentelemetry-instrumentation-action_pack"               &&
+          matrix.gem != "opentelemetry-instrumentation-action_view"               &&
+          matrix.gem != "opentelemetry-instrumentation-active_record"             &&
+          matrix.gem != "opentelemetry-instrumentation-active_support"            &&
+          matrix.gem != "opentelemetry-instrumentation-graphql"                   &&
+          matrix.gem != "opentelemetry-instrumentation-http_client"               &&
+          matrix.gem != "opentelemetry-instrumentation-lmdb"                      &&
+          matrix.gem != "opentelemetry-instrumentation-mysql2"                    &&
+          matrix.gem != "opentelemetry-instrumentation-pg"                        &&
+          matrix.gem != "opentelemetry-instrumentation-que"                       &&
+          matrix.gem != "opentelemetry-instrumentation-rack"                      &&
+          matrix.gem != "opentelemetry-instrumentation-rails"                     &&
+          matrix.gem != "opentelemetry-instrumentation-redis"                     &&
+          matrix.gem != "opentelemetry-instrumentation-resque"                    &&
+          matrix.gem != "opentelemetry-instrumentation-ruby_kafka"                &&
+          matrix.gem != "opentelemetry-instrumentation-trilogy"
+
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-sidekiq"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-trilogy"
+          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
+          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-koala"                     &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-delayed_job"               &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-bunny"                     &&
@@ -247,25 +248,25 @@ jobs:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
         if: |
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-action_pack"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-action_view"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-active_record"             &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-active_support"            &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-graphql"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-http_client"               &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-lmdb"                      &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-mysql2"                    &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-pg"                        &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-que"                       &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-rack"                      &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-rails"                     &&
-          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-redis"                     &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-resque"                    &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-ruby_kafka"                &&
+          matrix.gem != "opentelemetry-instrumentation-action_pack"               &&
+          matrix.gem != "opentelemetry-instrumentation-action_view"               &&
+          matrix.gem != "opentelemetry-instrumentation-active_record"             &&
+          matrix.gem != "opentelemetry-instrumentation-active_support"            &&
+          matrix.gem != "opentelemetry-instrumentation-graphql"                   &&
+          matrix.gem != "opentelemetry-instrumentation-http_client"               &&
+          matrix.gem != "opentelemetry-instrumentation-lmdb"                      &&
+          matrix.gem != "opentelemetry-instrumentation-mysql2"                    &&
+          matrix.gem != "opentelemetry-instrumentation-pg"                        &&
+          matrix.gem != "opentelemetry-instrumentation-que"                       &&
+          matrix.gem != "opentelemetry-instrumentation-rack"                      &&
+          matrix.gem != "opentelemetry-instrumentation-rails"                     &&
+          matrix.gem != "opentelemetry-instrumentation-redis"                     &&
+          matrix.gem != "opentelemetry-instrumentation-resque"                    &&
+          matrix.gem != "opentelemetry-instrumentation-ruby_kafka"                &&
+          matrix.gem != "opentelemetry-instrumentation-trilogy"
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-sidekiq"                   &&
-          ${{ matrix.gem }} != "opentelemetry-instrumentation-trilogy"
+          # ${{ matrix.gem }} != "opentelemetry-instrumentation-mongo"                     &&
+          # ${{ matrix.gem }} != "opentelemetry-instrumentation-rdkafka"                   &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-koala"                     &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-delayed_job"               &&
           # ${{ matrix.gem }} != "opentelemetry-instrumentation-bunny"                     &&
