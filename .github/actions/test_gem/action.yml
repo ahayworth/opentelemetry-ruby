@@ -13,23 +13,35 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Locate Gemfile
-      id: locate_gem
+    - name: Setup
+      id: setup
       shell: bash
       run: |
         dir=$(find . -iname '${{ inputs.gem }}.gemspec' -exec dirname {} \;)
         echo "::set-output name=dir::${dir}"
+
+        # We install multiple ruby versions here, and that makes for some
+        # annoying bundler conflicts when we get to the JRuby step. Removing
+        # the lockfile slows things down a bit, but we should still get most
+        # of the benefits of bundler caching.
+        rm -f "${dir}/Gemfile.lock"
+
+        if [[ "${{ inputs.ruby }}" == "jruby" ]]; then
+          echo "::set-output name=cache_key::jruby"
+        else
+          echo "::set-output name=cache_key::linux"
+        fi
     - name: "Install Ruby ${{ inputs.ruby }}"
       uses: ruby/setup-ruby@v1
       with:
         ruby-version: "${{ inputs.ruby }}"
-        working-directory: "${{ steps.locate_gem.outputs.dir }}"
+        working-directory: "${{ steps.setup.outputs.dir }}"
         bundler-cache: true
-        cache-version: "v1-${{ inputs.ruby }}"
+        cache-version: "v1-${{ steps.setup.cache_key }}"
     - name: Test Gem
       shell: bash
       run: |
-        cd "${{ steps.locate_gem.outputs.dir }}"
+        cd "${{ steps.setup.outputs.dir }}"
         bundle exec rake test
       env:
         TEST_KAFKA_HOST: "127.0.0.1"
