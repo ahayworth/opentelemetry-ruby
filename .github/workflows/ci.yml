@@ -51,6 +51,9 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+          yard: true
+          rubocop: true
+          build: true
       - name: "Test JRuby"
         if: "${{ matrix.os == 'ubuntu-latest' }}"
         uses: ./.github/actions/test_gem
@@ -93,6 +96,9 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+          yard: true
+          rubocop: true
+          build: true
       - name: "Test JRuby"
         if: "${{ matrix.os == 'ubuntu-latest' }}"
         uses: ./.github/actions/test_gem
@@ -140,6 +146,9 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+          yard: true
+          rubocop: true
+          build: true
       - name: "Test JRuby"
         if: "${{ matrix.os == 'ubuntu-latest' }}"
         uses: ./.github/actions/test_gem
@@ -204,6 +213,9 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+          yard: true
+          rubocop: true
+          build: true
       - name: "JRuby Filter"
         id: jruby_skip
         run: |
@@ -271,6 +283,9 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+          yard: true
+          rubocop: true
+          build: true
       - name: "JRuby Filter"
         id: jruby_skip
         run: |
