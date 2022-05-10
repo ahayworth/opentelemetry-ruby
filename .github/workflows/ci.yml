@@ -153,7 +153,6 @@ jobs:
           - opentelemetry-instrumentation-rails
           - opentelemetry-instrumentation-restclient
           - opentelemetry-instrumentation-rspec
-          - opentelemetry-instrumentation-sidekiq
           - opentelemetry-instrumentation-sinatra
     name: ${{ matrix.gem }}
     runs-on: ubuntu-latest
@@ -186,15 +185,8 @@ jobs:
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-graphql"        ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-http_client"    ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-lmdb"           ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-mysql2"         ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-pg"             ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-que"            ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rack"           ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-rails"          ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-redis"          ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
-          [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
           # This is essentially a bash script getting evaluated, and we need to return true or the whole job fails.
           true
 
@@ -222,6 +214,7 @@ jobs:
           - opentelemetry-instrumentation-redis
           - opentelemetry-instrumentation-resque
           - opentelemetry-instrumentation-ruby_kafka
+          - opentelemetry-instrumentation-sidekiq
           - opentelemetry-instrumentation-trilogy
     name: ${{ matrix.gem }}
     runs-on: ubuntu-latest
