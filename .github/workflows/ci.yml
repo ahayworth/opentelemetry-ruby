@@ -51,24 +51,40 @@ jobs:
           gem: "${{ matrix.gem }}"
           ruby: "jruby"
 
-  # exporter:
-  #   # TODO: Fixme
-  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       gem:
-  #         - opentelemetry-exporter-jaeger
-  #         - opentelemetry-exporter-otlp
-  #         - opentelemetry-exporter-zipkin
-  #   name: ${{ matrix.gem }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./.github/actions/test_gem
-  #       with:
-  #         gem: "${{ matrix.gem }}"
-  #         ruby: "3.1"
+  exporter:
+    # TODO: Fixme
+    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        gem:
+          - opentelemetry-exporter-jaeger
+          - opentelemetry-exporter-otlp
+          - opentelemetry-exporter-zipkin
+    name: ${{ matrix.gem }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Test Ruby 3.1"
+        uses: ./.github/actions/test_gem
+        with:
+          gem: "${{ matrix.gem }}"
+          ruby: "3.1"
+      - name: "Test Ruby 3.0"
+        uses: ./.github/actions/test_gem
+        with:
+          gem: "${{ matrix.gem }}"
+          ruby: "3.0"
+      - name: "Test Ruby 2.7"
+        uses: ./.github/actions/test_gem
+        with:
+          gem: "${{ matrix.gem }}"
+          ruby: "2.7"
+      - name: "Test JRuby"
+        uses: ./.github/actions/test_gem
+        with:
+          gem: "${{ matrix.gem }}"
+          ruby: "jruby"
   #
   # propagator:
   #   # TODO: Fixme
