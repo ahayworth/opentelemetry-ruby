@@ -30,7 +30,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
             # - windows-latest
-    name: ${{ matrix.gem }}
+    name: ${{ matrix.gem }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -68,7 +68,10 @@ jobs:
           - opentelemetry-exporter-jaeger
           - opentelemetry-exporter-otlp
           - opentelemetry-exporter-zipkin
-    name: ${{ matrix.gem }}
+        os:
+          - ubuntu-latest
+          - macos-latest
+    name: ${{ matrix.gem }} / ${{ matrix.os }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
