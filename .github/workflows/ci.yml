@@ -218,6 +218,7 @@ jobs:
           build: true
       - name: "JRuby Filter"
         id: jruby_skip
+        shell: bash
         run: |
           echo "::set-output name=skip::false"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-action_pack"              ]] && echo "::set-output name=skip::true"
@@ -288,6 +289,7 @@ jobs:
           build: true
       - name: "JRuby Filter"
         id: jruby_skip
+        shell: bash
         run: |
           echo "::set-output name=skip::false"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-bunny"      ]] && echo "::set-output name=skip::true"
