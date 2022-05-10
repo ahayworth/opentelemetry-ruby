@@ -11,104 +11,23 @@ on:
       - main
 
 jobs:
-  # base:
-  #   # TODO: Fixme
-  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       gem:
-  #         - opentelemetry-metrics-api
-  #         - opentelemetry-common
-  #         - opentelemetry-sdk
-  #         - opentelemetry-registry
-  #         - opentelemetry-api
-  #         - opentelemetry-semantic_conventions
-  #         - opentelemetry-test-helpers
-  #         - opentelemetry-resource_detectors
-  #   name: ${{ matrix.gem }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: ./.github/workflows/test_gem.yml
-  #       with:
-  #         gem: ${{ matrix.gem }}
-
-  propagator:
+  base:
     # TODO: Fixme
     if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
         gem:
-          # - opentelemetry-propagator-b3
-          # - opentelemetry-propagator-jaeger
-          - opentelemetry-propagator-ottrace
-          # - opentelemetry-propagator-xray
+          - opentelemetry-api
+          - opentelemetry-common
+          - opentelemetry-metrics-api
+          - opentelemetry-registry
+          - opentelemetry-resource_detectors
+          - opentelemetry-sdk
+          - opentelemetry-semantic_conventions
+          - opentelemetry-test-helpers
     name: ${{ matrix.gem }}
     runs-on: ubuntu-latest
-    env:
-      JRUBY_OPTS: --debug
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:latest
-        ports:
-          - 2181:2181
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:latest
-        ports:
-          - 9092:9092
-          - 29092:29092
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
-          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-          KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      memcached:
-        image: memcached:alpine
-        ports:
-          - 11211:11211
-      mongodb:
-        image: mongo:4.4
-        ports:
-          - 27017:27017
-      redis:
-        image: bitnami/redis:6.2
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        env:
-          REDIS_PASSWORD: "passw0rd"
-      mysql:
-        image: mysql:5.6
-        env:
-          MYSQL_DATABASE: mysql
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_PASSWORD: mysql
-          MYSQL_USER: mysql
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-      rabbitmq:
-        image: rabbitmq:3.8-alpine
-        ports:
-          - "5672:5672"
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
     steps:
       - uses: actions/checkout@v2
       - uses: ./.github/actions/test_gem
@@ -130,10 +49,31 @@ jobs:
   #   runs-on: ubuntu-latest
   #   steps:
   #     - uses: actions/checkout@v2
-  #     - uses: ./.github/workflows/test_gem.yml
+  #     - uses: ./.github/actions/test_gem
   #       with:
-  #         gem: ${{ matrix.gem }}
-
+  #         gem: "${{ matrix.gem }}"
+  #         ruby: "3.1"
+  #
+  # propagator:
+  #   # TODO: Fixme
+  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       gem:
+  #         - opentelemetry-propagator-b3
+  #         - opentelemetry-propagator-jaeger
+  #         - opentelemetry-propagator-ottrace
+  #         - opentelemetry-propagator-xray
+  #   name: ${{ matrix.gem }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: ./.github/actions/test_gem
+  #       with:
+  #         gem: "${{ matrix.gem }}"
+  #         ruby: "3.1"
+  #
   # instrumentation:
   #   # TODO: Fixme
   #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
@@ -141,43 +81,43 @@ jobs:
   #     fail-fast: false
   #     matrix:
   #       gem:
-  #         - opentelemetry-instrumentation-que
-  #         - opentelemetry-instrumentation-http_client
-  #         - opentelemetry-instrumentation-mysql2
-  #         - opentelemetry-instrumentation-sinatra
-  #         - opentelemetry-instrumentation-sidekiq
-  #         - opentelemetry-instrumentation-dalli
-  #         - opentelemetry-instrumentation-redis
-  #         - opentelemetry-instrumentation-ruby_kafka
-  #         - opentelemetry-instrumentation-concurrent_ruby
-  #         - opentelemetry-instrumentation-active_model_serializers
+  #         - opentelemetry-instrumentation-action_pack
   #         - opentelemetry-instrumentation-action_view
-  #         - opentelemetry-instrumentation-bunny
+  #         - opentelemetry-instrumentation-active_job
+  #         - opentelemetry-instrumentation-active_model_serializers
+  #         - opentelemetry-instrumentation-active_record
+  #         - opentelemetry-instrumentation-active_support
   #         - opentelemetry-instrumentation-all
   #         - opentelemetry-instrumentation-aws_sdk
-  #         - opentelemetry-instrumentation-active_record
-  #         - opentelemetry-instrumentation-faraday
-  #         - opentelemetry-instrumentation-resque
-  #         - opentelemetry-instrumentation-rdkafka
-  #         - opentelemetry-instrumentation-pg
-  #         - opentelemetry-instrumentation-ethon
-  #         - opentelemetry-instrumentation-lmdb
-  #         - opentelemetry-instrumentation-active_support
-  #         - opentelemetry-instrumentation-http
-  #         - opentelemetry-instrumentation-graphql
-  #         - opentelemetry-instrumentation-trilogy
-  #         - opentelemetry-instrumentation-net_http
-  #         - opentelemetry-instrumentation-rack
-  #         - opentelemetry-instrumentation-action_pack
-  #         - opentelemetry-instrumentation-mongo
-  #         - opentelemetry-instrumentation-restclient
-  #         - opentelemetry-instrumentation-koala
-  #         - opentelemetry-instrumentation-active_job
-  #         - opentelemetry-instrumentation-excon
-  #         - opentelemetry-instrumentation-rspec
   #         - opentelemetry-instrumentation-base
+  #         - opentelemetry-instrumentation-bunny
+  #         - opentelemetry-instrumentation-concurrent_ruby
+  #         - opentelemetry-instrumentation-dalli
   #         - opentelemetry-instrumentation-delayed_job
+  #         - opentelemetry-instrumentation-ethon
+  #         - opentelemetry-instrumentation-excon
+  #         - opentelemetry-instrumentation-faraday
+  #         - opentelemetry-instrumentation-graphql
+  #         - opentelemetry-instrumentation-http
+  #         - opentelemetry-instrumentation-http_client
+  #         - opentelemetry-instrumentation-koala
+  #         - opentelemetry-instrumentation-lmdb
+  #         - opentelemetry-instrumentation-mongo
+  #         - opentelemetry-instrumentation-mysql2
+  #         - opentelemetry-instrumentation-net_http
+  #         - opentelemetry-instrumentation-pg
+  #         - opentelemetry-instrumentation-que
+  #         - opentelemetry-instrumentation-rack
   #         - opentelemetry-instrumentation-rails
+  #         - opentelemetry-instrumentation-rdkafka
+  #         - opentelemetry-instrumentation-redis
+  #         - opentelemetry-instrumentation-resque
+  #         - opentelemetry-instrumentation-restclient
+  #         - opentelemetry-instrumentation-rspec
+  #         - opentelemetry-instrumentation-ruby_kafka
+  #         - opentelemetry-instrumentation-sidekiq
+  #         - opentelemetry-instrumentation-sinatra
+  #         - opentelemetry-instrumentation-trilogy
   #   name: ${{ matrix.gem }}
   #   runs-on: ubuntu-latest
   #   steps:
@@ -185,6 +125,68 @@ jobs:
   #     - uses: ./.github/workflows/test_gem.yml
   #       with:
   #         gem: ${{ matrix.gem }}
+    # env:
+    #   JRUBY_OPTS: --debug
+    # services:
+    #   zookeeper:
+    #     image: confluentinc/cp-zookeeper:latest
+    #     ports:
+    #       - 2181:2181
+    #     env:
+    #       ZOOKEEPER_CLIENT_PORT: 2181
+    #       ZOOKEEPER_TICK_TIME: 2000
+    #   kafka:
+    #     image: confluentinc/cp-kafka:latest
+    #     ports:
+    #       - 9092:9092
+    #       - 29092:29092
+    #     env:
+    #       KAFKA_BROKER_ID: 1
+    #       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    #       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:29092,PLAINTEXT_HOST://localhost:9092
+    #       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+    #       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+    #       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    #   memcached:
+    #     image: memcached:alpine
+    #     ports:
+    #       - 11211:11211
+    #   mongodb:
+    #     image: mongo:4.4
+    #     ports:
+    #       - 27017:27017
+    #   redis:
+    #     image: bitnami/redis:6.2
+    #     ports:
+    #       - 6379:6379
+    #     options: >-
+    #       --health-cmd "redis-cli ping"
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     env:
+    #       REDIS_PASSWORD: "passw0rd"
+    #   mysql:
+    #     image: mysql:5.6
+    #     env:
+    #       MYSQL_DATABASE: mysql
+    #       MYSQL_ROOT_PASSWORD: root
+    #       MYSQL_PASSWORD: mysql
+    #       MYSQL_USER: mysql
+    #     ports:
+    #       - 3306:3306
+    #     options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+    #   rabbitmq:
+    #     image: rabbitmq:3.8-alpine
+    #     ports:
+    #       - "5672:5672"
+    #   postgres:
+    #     image: postgres:13
+    #     env:
+    #       POSTGRES_PASSWORD: postgres
+    #     ports:
+    #       - 5432:5432
+    #     options: --health-cmd="pg_isready" --health-interval=5s --health-timeout=2s --health-retries=3
 
 # jobs:
 #   test:
