@@ -34,7 +34,7 @@ jobs:
 
   propagator:
     # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    # if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
