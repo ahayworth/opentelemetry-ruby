@@ -194,6 +194,9 @@ jobs:
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
+          # This is essentially a bash script getting evaluated, and we need to return true or the whole job fails.
+          true
+
       - name: "Test JRuby"
         if: "${{ steps.jruby_skip.outputs.skip == 'false' }}"
         uses: ./.github/actions/test_gem
@@ -258,6 +261,8 @@ jobs:
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-resque"         ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-ruby_kafka"     ]] && echo "::set-output name=skip::true"
           [[ "${{ matrix.gem }}" == "opentelemetry-instrumentation-trilogy"        ]] && echo "::set-output name=skip::true"
+          # This is essentially a bash script getting evaluated, and we need to return true or the whole job fails.
+          true
       - name: "Test JRuby"
         if: "${{ steps.jruby_skip.outputs.skip == 'false' }}"
         uses: ./.github/actions/test_gem
