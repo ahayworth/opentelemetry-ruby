@@ -42,7 +42,13 @@ runs:
       shell: bash
       run: |
         cd "${{ steps.setup.outputs.dir }}"
-        bundle exec rake test
+
+        if [[ -f "Appraisals" ]]; then
+          bundle exec appraisal install
+          bundle exec appraisal rake test
+        else
+          bundle exec rake test
+        fi
       env:
         TEST_KAFKA_HOST: "127.0.0.1"
         TEST_KAFKA_PORT: 29092
