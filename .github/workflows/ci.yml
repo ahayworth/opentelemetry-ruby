@@ -45,6 +45,11 @@ jobs:
         with:
           gem: "${{ matrix.gem }}"
           ruby: "2.7"
+      - name: "Test JRuby"
+        uses: ./.github/actions/test_gem
+        with:
+          gem: "${{ matrix.gem }}"
+          ruby: "jruby"
 
   # exporter:
   #   # TODO: Fixme
