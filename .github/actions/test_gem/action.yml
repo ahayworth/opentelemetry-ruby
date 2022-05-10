@@ -21,6 +21,8 @@ runs:
         echo "::set-output name=dir::${dir}"
     - name: "Install Ruby ${{ inputs.ruby }}"
       uses: ruby/setup-ruby@v1
+      env:
+        BUNDLE_CACHE_ALL_PLATFORMS: true
       with:
         ruby-version: "${{ inputs.ruby }}"
         working-directory: "${{ steps.locate_gem.outputs.dir }}"
