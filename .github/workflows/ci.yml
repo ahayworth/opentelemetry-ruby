@@ -9,28 +9,28 @@ on:
       - main
 
 jobs:
-  base:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        gem:
-          - opentelemetry-metrics-api
-          - opentelemetry-common
-          - opentelemetry-sdk
-          - opentelemetry-registry
-          - opentelemetry-api
-          - opentelemetry-semantic_conventions
-          - opentelemetry-test-helpers
-          - opentelemetry-resource_detectors
-    name: ${{ matrix.gem }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/test_gem.yml
-        with:
-          gem: ${{ matrix.gem }}
+  # base:
+  #   # TODO: Fixme
+  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       gem:
+  #         - opentelemetry-metrics-api
+  #         - opentelemetry-common
+  #         - opentelemetry-sdk
+  #         - opentelemetry-registry
+  #         - opentelemetry-api
+  #         - opentelemetry-semantic_conventions
+  #         - opentelemetry-test-helpers
+  #         - opentelemetry-resource_detectors
+  #   name: ${{ matrix.gem }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: ./.github/workflows/test_gem.yml
+  #       with:
+  #         gem: ${{ matrix.gem }}
 
   propagator:
     # TODO: Fixme
@@ -39,10 +39,10 @@ jobs:
       fail-fast: false
       matrix:
         gem:
-          - opentelemetry-propagator-b3
-          - opentelemetry-propagator-jaeger
+          # - opentelemetry-propagator-b3
+          # - opentelemetry-propagator-jaeger
           - opentelemetry-propagator-ottrace
-          - opentelemetry-propagator-xray
+          # - opentelemetry-propagator-xray
     name: ${{ matrix.gem }}
     runs-on: ubuntu-latest
     steps:
@@ -51,75 +51,75 @@ jobs:
         with:
           gem: ${{ matrix.gem }}
 
-  exporter:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        gem:
-          - opentelemetry-exporter-jaeger
-          - opentelemetry-exporter-otlp
-          - opentelemetry-exporter-zipkin
-    name: ${{ matrix.gem }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/test_gem.yml
-        with:
-          gem: ${{ matrix.gem }}
+  # exporter:
+  #   # TODO: Fixme
+  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       gem:
+  #         - opentelemetry-exporter-jaeger
+  #         - opentelemetry-exporter-otlp
+  #         - opentelemetry-exporter-zipkin
+  #   name: ${{ matrix.gem }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: ./.github/workflows/test_gem.yml
+  #       with:
+  #         gem: ${{ matrix.gem }}
 
-  instrumentation:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        gem:
-          - opentelemetry-instrumentation-que
-          - opentelemetry-instrumentation-http_client
-          - opentelemetry-instrumentation-mysql2
-          - opentelemetry-instrumentation-sinatra
-          - opentelemetry-instrumentation-sidekiq
-          - opentelemetry-instrumentation-dalli
-          - opentelemetry-instrumentation-redis
-          - opentelemetry-instrumentation-ruby_kafka
-          - opentelemetry-instrumentation-concurrent_ruby
-          - opentelemetry-instrumentation-active_model_serializers
-          - opentelemetry-instrumentation-action_view
-          - opentelemetry-instrumentation-bunny
-          - opentelemetry-instrumentation-all
-          - opentelemetry-instrumentation-aws_sdk
-          - opentelemetry-instrumentation-active_record
-          - opentelemetry-instrumentation-faraday
-          - opentelemetry-instrumentation-resque
-          - opentelemetry-instrumentation-rdkafka
-          - opentelemetry-instrumentation-pg
-          - opentelemetry-instrumentation-ethon
-          - opentelemetry-instrumentation-lmdb
-          - opentelemetry-instrumentation-active_support
-          - opentelemetry-instrumentation-http
-          - opentelemetry-instrumentation-graphql
-          - opentelemetry-instrumentation-trilogy
-          - opentelemetry-instrumentation-net_http
-          - opentelemetry-instrumentation-rack
-          - opentelemetry-instrumentation-action_pack
-          - opentelemetry-instrumentation-mongo
-          - opentelemetry-instrumentation-restclient
-          - opentelemetry-instrumentation-koala
-          - opentelemetry-instrumentation-active_job
-          - opentelemetry-instrumentation-excon
-          - opentelemetry-instrumentation-rspec
-          - opentelemetry-instrumentation-base
-          - opentelemetry-instrumentation-delayed_job
-          - opentelemetry-instrumentation-rails
-    name: ${{ matrix.gem }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./.github/workflows/test_gem.yml
-        with:
-          gem: ${{ matrix.gem }}
+  # instrumentation:
+  #   # TODO: Fixme
+  #   if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       gem:
+  #         - opentelemetry-instrumentation-que
+  #         - opentelemetry-instrumentation-http_client
+  #         - opentelemetry-instrumentation-mysql2
+  #         - opentelemetry-instrumentation-sinatra
+  #         - opentelemetry-instrumentation-sidekiq
+  #         - opentelemetry-instrumentation-dalli
+  #         - opentelemetry-instrumentation-redis
+  #         - opentelemetry-instrumentation-ruby_kafka
+  #         - opentelemetry-instrumentation-concurrent_ruby
+  #         - opentelemetry-instrumentation-active_model_serializers
+  #         - opentelemetry-instrumentation-action_view
+  #         - opentelemetry-instrumentation-bunny
+  #         - opentelemetry-instrumentation-all
+  #         - opentelemetry-instrumentation-aws_sdk
+  #         - opentelemetry-instrumentation-active_record
+  #         - opentelemetry-instrumentation-faraday
+  #         - opentelemetry-instrumentation-resque
+  #         - opentelemetry-instrumentation-rdkafka
+  #         - opentelemetry-instrumentation-pg
+  #         - opentelemetry-instrumentation-ethon
+  #         - opentelemetry-instrumentation-lmdb
+  #         - opentelemetry-instrumentation-active_support
+  #         - opentelemetry-instrumentation-http
+  #         - opentelemetry-instrumentation-graphql
+  #         - opentelemetry-instrumentation-trilogy
+  #         - opentelemetry-instrumentation-net_http
+  #         - opentelemetry-instrumentation-rack
+  #         - opentelemetry-instrumentation-action_pack
+  #         - opentelemetry-instrumentation-mongo
+  #         - opentelemetry-instrumentation-restclient
+  #         - opentelemetry-instrumentation-koala
+  #         - opentelemetry-instrumentation-active_job
+  #         - opentelemetry-instrumentation-excon
+  #         - opentelemetry-instrumentation-rspec
+  #         - opentelemetry-instrumentation-base
+  #         - opentelemetry-instrumentation-delayed_job
+  #         - opentelemetry-instrumentation-rails
+  #   name: ${{ matrix.gem }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: ./.github/workflows/test_gem.yml
+  #       with:
+  #         gem: ${{ matrix.gem }}
 
 # jobs:
 #   test:
