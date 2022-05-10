@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+      # TODO: fixme
+      - ahayworth/split-builds-take-two
   pull_request:
     branches:
       - main
@@ -34,7 +36,7 @@ jobs:
 
   propagator:
     # TODO: Fixme
-    # if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
+    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
