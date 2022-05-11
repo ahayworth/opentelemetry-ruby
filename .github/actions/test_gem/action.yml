@@ -53,25 +53,52 @@ runs:
 
     - name: "Install Ruby ${{ inputs.ruby }} with dependencies"
       uses: ruby/setup-ruby@v1
-      if: "${{ steps.setup.outputs.appraisals == 'false' }}"
       with:
         ruby-version: "${{ inputs.ruby }}"
         working-directory: "${{ steps.setup.outputs.dir }}"
         bundler-cache: true
         cache-version: "v1-${{ steps.setup.outputs.cache_key }}"
 
-    - name: "Install Ruby ${{ inputs.ruby }} without dependencies"
-      uses: ruby/setup-ruby@v1
+    # If we're using appraisal, installing those dependencies can
+    # take quite awhile (looking at you, rdkafka). In order to shave
+    # several minutes off of our builds, we attempt to cache the appraisal
+    # stuff ourselves. :fingers_crossed:
+    - name: "Generate Appraisal gemfiles"
       if: "${{ steps.setup.outputs.appraisals == 'true' }}"
-      with:
-        ruby-version: "${{ inputs.ruby }}"
-    - name: "Install dependencies and appraisals"
       shell: bash
-      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
       run: |
         cd "${{ steps.setup.outputs.dir }}"
-        bundle install
-        bundle exec appraisal install
+
+        # Remove generated lockfiles from previous builds, if they exist.
+        bundle exec appraisal clean
+
+        # Generate new Gemfiles
+        bundle exec appraisal generate
+
+        # Generate a lockfile for each one
+        for gemfile in gemfiles/*; do
+          BUNDLE_GEMFILE="gemfiles/${gemfile}" bundle lock --lockfile="gemfiles/${gemfile}.lock"
+        done
+
+    # Now, try to use a cache for actually installing things here...
+    - name: "Cache Appraisal gems"
+      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
+      uses: actions/cache@v3
+      with:
+        path: vendor/appraisal
+        # This will almost certainly break anytime the `ubuntu-latest` version changes, and we'll need to bust the cache at that time. :(
+        # Also take note of the dire warnings from the ruby/setup-ruby folks, which resulted in the "how to cache ruby w/ actions/cache" instructions
+        # being removed entirely: https://github.com/actions/cache/commit/1bfe3accb30cbecd1eb79cdba246c3a7fc899cdf
+        # We're not specifying a list of less-specific restore-keys here, because we're trying to be rather cautious. I'd rather have more
+        # cache misses than deal with caching-related build failures more often than we have to.
+        key: "v1-${{ runner.os }}-${{ steps.setup.outputs.cache_key }}-${{ inputs.ruby }}-${{ inputs.gem }}-${{ hashFiles('gemfiles/**.lock') }}"
+
+    - name: "Install dependencies and appraisals"
+      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
+      shell: bash
+      run: |
+        cd "${{ steps.setup.outputs.dir }}"
+        bundle exec appraisal install --path vendor/appraisal
 
     - name: Test Gem
       shell: bash
