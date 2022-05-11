@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -12,8 +13,6 @@ on:
 
 jobs:
   base:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
@@ -62,8 +61,6 @@ jobs:
           ruby: "jruby"
 
   exporters:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
@@ -78,7 +75,7 @@ jobs:
         exclude:
           # Doesn't build on macos
           - os: macos-latest
-            gem: opentelemetry-propagator-jaeger
+            gem: opentelemetry-exporter-jaeger
     name: ${{ matrix.gem }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -111,8 +108,6 @@ jobs:
           ruby: "jruby"
 
   propagators:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       matrix:
@@ -258,8 +253,6 @@ jobs:
           ruby: "jruby"
 
   instrumentation_with_services:
-    # TODO: Fixme
-    if: ${{ github.repository == 'ahayworth/opentelemetry-ruby' }}
     strategy:
       fail-fast: false
       # We don't run on macos and windows since service containers aren't supported there.
