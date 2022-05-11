@@ -85,7 +85,7 @@ runs:
       if: "${{ steps.setup.outputs.appraisals == 'true' }}"
       uses: actions/cache@v3
       with:
-        path: vendor/appraisal
+        path: vendor/bundle
         # This will almost certainly break anytime the os or ruby minor version changes, and we'll need to bust the cache at that time. :(
         # Also take note of the dire warnings from the ruby/setup-ruby folks, which resulted in the "how to cache ruby w/ actions/cache" instructions
         # being removed entirely: https://github.com/actions/cache/commit/1bfe3accb30cbecd1eb79cdba246c3a7fc899cdf
@@ -98,7 +98,7 @@ runs:
       shell: bash
       run: |
         cd "${{ steps.setup.outputs.dir }}"
-        bundle exec appraisal install --path vendor/appraisal
+        bundle exec appraisal install
 
     - name: Test Gem
       shell: bash
@@ -106,7 +106,7 @@ runs:
         cd "${{ steps.setup.outputs.dir }}"
 
         if [[ -f "Appraisals" ]]; then
-          BUNDLE_PATH=vendor/appraisal bundle exec appraisal rake test
+          bundle exec appraisal rake test
         else
           bundle exec rake test
         fi
