@@ -73,7 +73,6 @@ Watch for "low hanging fruit" performance improvements including:
 
 * Add tests via minitest (not rspec)
 * Test against multiple versions of instrumented library via `appraisal`
-  * GOTCHA: appraisal-2.2.0 + bundler-2.1.x (at least 2.1.4)
 * Configure `.circleci/config.yml`
 * Try to preserve all applicable tests from dd-trace-rb
   * Skip tests datadog-specific configurations
