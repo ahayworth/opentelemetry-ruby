@@ -99,6 +99,7 @@ runs:
       run: |
         cd "${{ steps.setup.outputs.dir }}"
         bundle exec appraisal install
+        bundle exec appraisal bundle info rest-client
 
     - name: Test Gem
       shell: bash
