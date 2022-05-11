@@ -80,6 +80,9 @@ runs:
           BUNDLE_GEMFILE="${gemfile}" bundle lock --lockfile="${gemfile}.lock"
         done
 
+        # Set bundler path for appraisals
+        bundle config set --local path vendor/appraisal
+
     # Now, try to use a cache for actually installing things here...
     - name: "Cache Appraisal gems"
       if: "${{ steps.setup.outputs.appraisals == 'true' }}"
@@ -98,7 +101,7 @@ runs:
       shell: bash
       run: |
         cd "${{ steps.setup.outputs.dir }}"
-        bundle exec appraisal install --path vendor/appraisal
+        bundle exec appraisal install
 
     - name: Test Gem
       shell: bash
@@ -132,21 +135,27 @@ runs:
         TEST_REDIS_HOST: localhost
         TEST_REDIS_PORT: 6379
 
-    - name: YARD
+    - name: "Unset Appraisal bundle path"
+      if: "${{ steps.setup.outputs.appraisals == 'true' }}"
+      shell: bash
+      run: |
+        bundle config unset --local path
+
+    - name: "YARD"
       shell: bash
       if: "${{ inputs.yard == 'true' }}"
       run: |
         cd "${{ steps.setup.outputs.dir }}"
         bundle exec rake yard
 
-    - name: Rubocop
+    - name: "Rubocop"
       shell: bash
       if: "${{ inputs.rubocop == 'true' }}"
       run: |
         cd "${{ steps.setup.outputs.dir }}"
         bundle exec rake rubocop
 
-    - name: Build Gem
+    - name: "Build Gem"
       shell: bash
       if: "${{ inputs.build == 'true' }}"
       run: |
