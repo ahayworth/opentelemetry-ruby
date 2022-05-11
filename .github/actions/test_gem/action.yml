@@ -41,7 +41,7 @@ runs:
         # of the benefits of bundler caching.
         rm -f "${dir}/Gemfile.lock"
 
-        echo "::set-output name=cache_key::linux"
+        echo "::set-output name=cache_key::mri"
         if [[ "${{ inputs.ruby }}" == "jruby" ]]; then
           echo "::set-output name=cache_key::jruby"
         fi
@@ -86,12 +86,12 @@ runs:
       uses: actions/cache@v3
       with:
         path: vendor/appraisal
-        # This will almost certainly break anytime the `ubuntu-latest` version changes, and we'll need to bust the cache at that time. :(
+        # This will almost certainly break anytime the os or ruby minor version changes, and we'll need to bust the cache at that time. :(
         # Also take note of the dire warnings from the ruby/setup-ruby folks, which resulted in the "how to cache ruby w/ actions/cache" instructions
         # being removed entirely: https://github.com/actions/cache/commit/1bfe3accb30cbecd1eb79cdba246c3a7fc899cdf
         # We're not specifying a list of less-specific restore-keys here, because we're trying to be rather cautious. I'd rather have more
         # cache misses than deal with caching-related build failures more often than we have to.
-        key: "v1-${{ runner.os }}-${{ steps.setup.outputs.cache_key }}-${{ inputs.ruby }}-${{ inputs.gem }}-${{ hashFiles('gemfiles/**.lock') }}"
+        key: "v1-${{ runner.os }}-${{ steps.setup.outputs.cache_key }}-${{ inputs.ruby }}-${{ inputs.gem }}-${{ hashFiles('**/gemfiles/*.gemfile.lock') }}"
 
     - name: "Install dependencies and appraisals"
       if: "${{ steps.setup.outputs.appraisals == 'true' }}"
