@@ -75,6 +75,10 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
+        exclude:
+          # Doesn't build on macos
+          - os: macos-latest
+            gem: opentelemetry-propagator-jaeger
     name: ${{ matrix.gem }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -121,10 +125,6 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        exclude:
-          # Doesn't build on macos
-          - os: macos-latest
-            gem: opentelemetry-propagator-jaeger
     name: ${{ matrix.gem }} / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
