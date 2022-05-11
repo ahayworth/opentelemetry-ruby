@@ -77,7 +77,7 @@ runs:
 
         # Generate a lockfile for each one
         for gemfile in gemfiles/*; do
-          BUNDLE_GEMFILE="gemfiles/${gemfile}" bundle lock --lockfile="gemfiles/${gemfile}.lock"
+          BUNDLE_GEMFILE="${gemfile}" bundle lock --lockfile="${gemfile}.lock"
         done
 
     # Now, try to use a cache for actually installing things here...
