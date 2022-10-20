@@ -12,12 +12,17 @@ module OpenTelemetry
         # It is not required to subclass this class to provide an implementation
         # of MetricReader, provided the interface is satisfied.
         class MetricReader
-          attr_reader :metric_store
+          attr_reader :metric_store, :aggregation, :temporality
 
-          def initialize
+          # TODO: these should probably not just be symbols
+          def initialize(exporter:, aggregation: :default, temporality: :cumulative)
             @metric_store = OpenTelemetry::SDK::Metrics::State::MetricStore.new
+            @exporter = exporter
+            @aggregation = aggregation
+            @temporality = temporality
           end
 
+          # TODO: fix me to collect from metric state manager
           def collect
             @metric_store.collect
           end

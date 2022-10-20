@@ -8,6 +8,7 @@ module OpenTelemetry
   module SDK
     module Metrics
       module Aggregation
+        # TODO: override initialize_dup ?
         HistogramDataPoint = Struct.new(:attributes,            # optional Hash{String => String, Numeric, Boolean, Array<String, Numeric, Boolean>}
                                         :start_time_unix_nano,  # Integer nanoseconds since Epoch
                                         :time_unix_nano,        # Integer nanoseconds since Epoch

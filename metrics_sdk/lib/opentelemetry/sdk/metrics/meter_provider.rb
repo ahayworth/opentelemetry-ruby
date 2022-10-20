@@ -22,6 +22,7 @@ module OpenTelemetry
           @stopped = false
           @metric_readers = []
           @resource = resource
+          @stream_manager = OpenTelemetry::SDK::Metrics::State::MetricStreamManager.new
         end
 
         # Returns a {Meter} instance.
@@ -109,7 +110,7 @@ module OpenTelemetry
               OpenTelemetry.logger.warn('calling MetricProvider#add_metric_reader after shutdown.')
             else
               @metric_readers.push(metric_reader)
-              @meter_registry.each_value { |meter| meter.add_metric_reader(metric_reader) }
+              @stream_manager.register_metric_reader(metric_reader)
             end
 
             nil
@@ -117,11 +118,9 @@ module OpenTelemetry
         end
 
         # @api private
-        def register_synchronous_instrument(instrument)
+        def register_instrument(instrument)
           @mutex.synchronize do
-            @metric_readers.each do |mr|
-              instrument.register_with_new_metric_store(mr.metric_store)
-            end
+            @stream_manager.register_instrument(instrument)
           end
         end
 
