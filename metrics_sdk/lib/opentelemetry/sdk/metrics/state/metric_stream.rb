@@ -84,7 +84,7 @@ module OpenTelemetry
           #     metric_stream_string << " #{value}"
           #     metric_stream_string
           #   end.join("\n")
-          end
+          # end
         end
       end
     end
